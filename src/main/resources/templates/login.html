@@ -54,13 +54,12 @@
                         <input type="hidden" name="next" value="${next!''}">
                         <div class="button-wrapper command clearfix">
                             <button class="sign-button submit" type="submit" onclick="form=document.getElementById('loginRegFrom');form.action='/login';form.submit();">登录</button>
-                            <button class="sign-button submit" type="submit" onclick="form=document.getElementById('loginRegFrom');form.action='/reg';form.submit();">注册</button>
                         </div>
                         <div class="signin-misc-wrapper clearfix">
                             <label class="remember-me">
                                 <input type="checkbox" name="remember_me" checked="" value="true"> 记住我
                             </label>
-                            <a class="unable-login" href="#">无法登录?</a>
+                            <a class="unable-login" href="/toreg">没有账号?</a>
                         </div>
                     </form>
                 </div>
@@ -142,9 +141,6 @@
                     <div class="captcha-container">
                         <img class="js-refreshCaptcha captcha" width="120" height="30" data-tip="s$t$看不清楚？换一张"  alt="验证码">
                     </div>
-                </div>
-                <div class="actions">
-                    <button class="submit blue-button">注册</button>
                 </div>
                 <div class="sns clearfix">
                     <span>已有帐号？<a href="#" class="switch-to-login">登录</a></span>

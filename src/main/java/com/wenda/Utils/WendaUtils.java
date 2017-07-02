@@ -5,4 +5,6 @@ package com.wenda.Utils;
  */
 public class WendaUtils {
     public static final int ANONYMOUS_NAME = 26;
+    public static final int ADMIN_NAME = 28;
+    public static final int ADVICE_NAME = 29;
 }

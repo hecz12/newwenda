@@ -1,10 +1,7 @@
 package com.wenda.dao;
 
 import com.wenda.model.Question;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,6 +24,11 @@ public interface QuestionDao {
 
     @Select({"select ",SELECT_FILED," from ",TABLE_NAME," where id=#{id}"})
     Question selectQuestionById(int id);
+
+    @Update({"update ",TABLE_NAME," set comment_count = #{commentCount} " +
+            "where id=#{id}"})
+    int updateCommentCount(@Param("id") int id,
+                           @Param("commentCount") int commentCount);
 
     List<Question> selectLatestQuestions(@Param("userId") int userId,
                                          @Param("offset") int offset,

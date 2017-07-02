@@ -42,4 +42,8 @@ public class QuestionService {
         return questionDao.addQuestion(question)>0?question.getUserId():0;
     }
 
+    public int updateCommentCount(int id,int commentCount)
+    {
+        return questionDao.updateCommentCount(id,commentCount);
+    }
 }

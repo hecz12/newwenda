@@ -40,20 +40,30 @@ public class CommentController {
     public String addComment(@RequestParam("questionId") int questionId,
                              @RequestParam("content") String content)
     {
-        Comment comment = new Comment();
-        comment.setEntityId(questionId);
-        comment.setEntityType(EntityType.TYPE_QUESTION);
-        comment.setContent(HtmlUtils.htmlEscape(content));
-        comment.setContent(sensitiveService.filter(comment.getContent()));
-        if(hostHolder.get()!=null)
+        try {
+            Comment comment = new Comment();
+            comment.setEntityId(questionId);
+            comment.setEntityType(EntityType.TYPE_QUESTION);
+            comment.setContent(HtmlUtils.htmlEscape(content));
+            comment.setContent(sensitiveService.filter(comment.getContent()));
+            if(hostHolder.get()!=null)
+            {
+                comment.setUserId(hostHolder.get().getId());
+            }
+            else{
+                comment.setUserId(WendaUtils.ANONYMOUS_NAME);
+            }
+            commentService.addComment(comment);
+            int count = commentService.getCommentCount(comment.getEntityId(),comment.getEntityType());
+            System.out.println(count);
+            questionService.updateCommentCount(questionId,count);
+        }
+        catch (Exception e)
         {
-            comment.setUserId(hostHolder.get().getId());
+            e.printStackTrace();
         }
-        else{
-            comment.setUserId(WendaUtils.ANONYMOUS_NAME);
-        }
-        commentService.addComment(comment);
-        return "redirect:/question/"+questionService.getQuestionById(comment.getEntityId()).getId();
+
+        return "redirect:/question/"+questionId;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.wenda.Interceptor;
 
 import com.wenda.model.HostHolder;
+import com.wenda.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -18,10 +19,16 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
     HostHolder hostHolder;
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
-        if(hostHolder.get()==null)
+        User user = hostHolder.get();
+        if(user==null)
         {
-            httpServletResponse.sendRedirect("/loginreg?next="+httpServletRequest.getRequestURI());
+            httpServletResponse.sendRedirect("/login?next="+httpServletRequest.getRequestURI());
         }
+        if(user.getStatus()==0)
+        {
+            httpServletResponse.sendRedirect("/tologin?next="+httpServletRequest.getRequestURI()+"&error="+"您还未激活，去激活吧");
+        }
+
         return true;
     }
 

@@ -27,6 +27,18 @@ public class CommentService {
         comment.setCreateDate(new Date());
         return commentDao.addComment(comment)>0?comment.getId():0;
     }
+
+    public Comment getComment(int id)
+    {
+        return commentDao.selectCommentById(id);
+    }
+
+    public int getCommentCount(int entityId,int entityType)
+    {
+        return commentDao.getCommentCount(entityId, entityType);
+    }
+
+
     public void deleteComment(int entityId,int entityType)
     {
         commentDao.updateStatus(entityId,entityType,1);

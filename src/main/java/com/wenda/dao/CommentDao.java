@@ -21,14 +21,17 @@ public interface CommentDao {
     int addComment(Comment comment);
 
     @Select({"select ",SELECT_FILED," from ",TABLE_NAME," where entity_id=#{entityId}" +
-            " and entity_type=#{entityType} limit #{offset},#{limit}" })
+            " and entity_type=#{entityType} order by create_date desc limit #{offset},#{limit}" })
     List<Comment> selectCommentByEntity(@Param("entityId") int entityId,
                                @Param("entityType") int entityType,
                                @Param("limit") int limit,
                                @Param("offset") int offset);
 
-    @Select({"select count(id) from ",TABLE_NAME," where entity_id=#{entityId} and" +
-            "entity_type=#{entityType}"})
+    @Select({"select ",SELECT_FILED," from ",TABLE_NAME," where id=#{id}"})
+    Comment selectCommentById(@Param("id") int id);
+
+    @Select({"select count(id) from ",TABLE_NAME," where entity_id=#{entityId} and " +
+            " entity_type=#{entityType}"})
     int getCommentCount(@Param("entityId") int entityId,
                         @Param("entityType") int entityType);
 

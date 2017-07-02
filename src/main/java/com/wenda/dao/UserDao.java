@@ -13,18 +13,25 @@ import java.security.PrivateKey;
 @Mapper
 public interface UserDao {
     String TABLE_NAME = " user ";
-    String FILED_NAME = " name,password,salt,head_url ";
+    String FILED_NAME = " email,name,password,salt,head_url,status,active ";
     String SELECT_NAME = " id,"+FILED_NAME;
 
     @Insert({"insert into ",TABLE_NAME," (",FILED_NAME,") ","values" +
-            " (#{name},#{password},#{salt},#{headUrl})" })
+            " (#{email},#{name},#{password},#{salt},#{headUrl},#{status},#{active})" })
     int addUser(User user);
 
     @Update({"update ",TABLE_NAME," set password = #{password} where id = #{id}"})
     int updatePassword(User user);
 
+    @Update({"update ",TABLE_NAME," set status= #{status},active=#{active} where id = #{id}"})
+    int updateStatusAndActive(User user);
+
+
     @Select({"select ",SELECT_NAME," from ",TABLE_NAME," where id = #{id}"})
     User selectById(int id);
+
+    @Select({"select ",SELECT_NAME," from ",TABLE_NAME," where email = #{email}"})
+    User selectByEmail(String email);
 
     @Select({"select ",SELECT_NAME," from ",TABLE_NAME," where name = #{name}"})
     User selectByName(String name);

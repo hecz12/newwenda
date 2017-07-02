@@ -9,6 +9,33 @@ public class User {
     private String password;
     private String salt;
     private String headUrl;
+    private String email;
+    private int status;
+    private String active;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getActive() {
+        return active;
+    }
+
+    public void setActive(String active) {
+        this.active = active;
+    }
 
     public int getId() {
         return id;

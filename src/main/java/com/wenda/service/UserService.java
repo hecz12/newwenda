@@ -1,9 +1,14 @@
 package com.wenda.service;
 
+import com.sun.deploy.panel.ITreeNode;
 import com.wenda.Utils.MD5Utils;
 import com.wenda.Utils.UUIDUtils;
+import com.wenda.async.EventModel;
+import com.wenda.async.EventProducer;
+import com.wenda.async.EventType;
 import com.wenda.dao.LoginTicketDao;
 import com.wenda.dao.UserDao;
+import com.wenda.model.EntityType;
 import com.wenda.model.LoginTicket;
 import com.wenda.model.User;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sun.security.krb5.internal.Ticket;
 
+import java.rmi.MarshalledObject;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +31,8 @@ public class UserService {
     UserDao userDao;
     @Autowired
     LoginTicketDao loginTicketDao;
+    @Autowired
+    EventProducer producer;
 
     public String  addLoginTicket(int userId)
     {
@@ -44,8 +52,13 @@ public class UserService {
         return userDao.selectById(id);
     }
 
+    public int updateStatusAndActive(User user)
+    {
+        return userDao.updateStatusAndActive(user)>0?user.getId():0;
+    }
 
-    public Map register(String name,String password)
+
+    public Map register(String email,String name,String password)
     {
         Map<String,String> map = new HashMap<>();
         if(StringUtils.isBlank(name))
@@ -58,13 +71,26 @@ public class UserService {
             map.put("msg","密码不能为空");
             return map;
         }
+        if(!isEmail(email))
+        {
+            map.put("msg","邮箱格式不正确");
+            return map;
+        }
         if(userDao.selectByName(name)!=null)
         {
             map.put("msg","用户名已存在");
             return map;
         }
+        if(userDao.selectByEmail(email)!=null)
+        {
+            map.put("msg","邮箱已存在");
+            return map;
+        }
         User user = new User();
         user.setName(name);
+        user.setEmail(email);
+        user.setStatus(0);
+        user.setActive(UUIDUtils.getUUIDName());
         user.setSalt(UUIDUtils.getUUIDName());
         user.setPassword(MD5Utils.MD5(password+user.getSalt()));
         StringBuilder stringBuilder = new StringBuilder();
@@ -77,6 +103,10 @@ public class UserService {
         {
             System.out.println("用户id不存在");
         }
+        producer.fireEvent(new EventModel(EventType.Register).setExt("email",user.getEmail())
+                            .setActorId(user.getId())
+                            .setExt("username",user.getName())
+                            .setExt("active",user.getActive()));
         LoginTicket loginTicket = new LoginTicket();
         loginTicket.setStatus(0);
         loginTicket.setUserId(user.getId());
@@ -114,6 +144,7 @@ public class UserService {
         loginTicket.setUserId(user.getId());
         loginTicketDao.updateTicketByUserId(loginTicket);
         map.put("ticket",addLoginTicket(user.getId()));
+        map.put("userId",String.valueOf(user.getId()));
         return map;
     }
 
@@ -124,5 +155,13 @@ public class UserService {
             loginTicket.setStatus(1);
             loginTicketDao.updateTicket(loginTicket);
         }
+    }
+    public static boolean isEmail(String name)
+    {
+        return name.matches("[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?");
+    }
+    public User getUserByName(String name)
+    {
+        return userDao.selectByName(name);
     }
 }

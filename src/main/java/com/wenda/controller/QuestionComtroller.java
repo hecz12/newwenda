@@ -1,8 +1,10 @@
 package com.wenda.controller;
 
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import com.wenda.Utils.JSONUtils;
 import com.wenda.model.*;
 import com.wenda.service.CommentService;
+import com.wenda.service.LikeService;
 import com.wenda.service.QuestionService;
 import com.wenda.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class QuestionComtroller {
     UserService userService;
     @Autowired
     CommentService commentService;
+    @Autowired
+    LikeService likeService;
 
     @PostMapping(path = {"/question/add"})
     @ResponseBody
@@ -68,6 +72,16 @@ public class QuestionComtroller {
         {
             ViewObject vo = new ViewObject();
             vo.set("comment",comment);
+            long likeCount = likeService.getLikeCount(comment.getId(),EntityType.TYPE_COMMENT);
+            vo.set("likeCount",likeCount);
+            User user = hostHolder.get();
+            if(user==null)
+            {
+                vo.set("status",0);
+            }
+            else{
+                vo.set("status",likeService.isremember(user.getId(),comment.getId(),EntityType.TYPE_COMMENT));
+            }
             vo.set("user",userService.getUser(comment.getUserId()));
             vos.add(vo);
         }
