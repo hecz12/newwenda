@@ -30,7 +30,7 @@
                                             <a target="_blank" class="post-link" style="color: #00BC9B" href="/question/${vo.question.id}">${vo.question.title}</a></h2>
                                         <div class="entry-body post-body js-collapse-body">
                                             <div class="zm-item-vote">
-                                                <a class="zm-item-vote-count js-expand js-vote-count" href="#" data-bind-votecount="">1082</a></div>
+                                                <a class="zm-item-vote-count js-expand js-vote-count" href="#" data-bind-votecount="">${vo.followerCount!''}</a></div>
                                             <div class="zm-votebar" data-za-module="VoteBar">
                                                 <button class="up" aria-pressed="false" title="赞同">
                                                     <i class="icon vote-arrow"></i>
@@ -58,9 +58,14 @@
                                         <div class="feed-meta">
                                             <div class="zm-item-meta meta clearfix js-contentActions">
                                                 <div class="zm-meta-panel">
-                                                    <a data-follow="c:link" class="zg-follow meta-item" href="#" id="cl-2180">
-                                                        <i class="z-icon-follow"></i>关注专栏</a>
-                                                    <a href="#" class="meta-item toggle-comment js-toggleCommentBox">
+                                                    <#if vo.followed>
+                                                        <a class="follow-link zg-follow meta-item js-follow-question" data-status="1" data-id="${vo.question.id!''}" href="javascript:;">
+                                                            <i class="z-icon-follow"></i>取消关注</a>
+                                                        <#else>
+                                                            <a class="follow-link zg-follow meta-item js-follow-question" data-id="${vo.question.id!''}" href="javascript:;">
+                                                                <i class="z-icon-follow"></i>关注问题</a>
+                                                    </#if>
+                                                    <a href="/question/${vo.question.id}" class="meta-item toggle-comment js-toggleCommentBox">
                                                         <i class="z-icon-comment"></i>${vo.question.commentCount} 条评论</a>
                                                     <a href="#" class="meta-item zu-autohide js-share goog-inline-block goog-menu-button" role="button" aria-expanded="false" tabindex="0" aria-haspopup="true" style="-webkit-user-select: none;">
                                                         <div class="goog-inline-block goog-menu-button-outer-box">
@@ -179,4 +184,5 @@
             <div class="tooltip-arrow arrow"></div>
             <div class="tooltip-inner inner">如需转载，请通过私信或评论联系我</div></div>
     </div>
+    <script type="text/javascript" src="/scripts/main/site/detail.js"></script>
 <#include "foot.html">

@@ -3,10 +3,7 @@ package com.wenda.controller;
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import com.wenda.Utils.JSONUtils;
 import com.wenda.model.*;
-import com.wenda.service.CommentService;
-import com.wenda.service.LikeService;
-import com.wenda.service.QuestionService;
-import com.wenda.service.UserService;
+import com.wenda.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +32,8 @@ public class QuestionComtroller {
     CommentService commentService;
     @Autowired
     LikeService likeService;
+    @Autowired
+    FollowService followService;
 
     @PostMapping(path = {"/question/add"})
     @ResponseBody
@@ -83,9 +82,34 @@ public class QuestionComtroller {
                 vo.set("status",likeService.isremember(user.getId(),comment.getId(),EntityType.TYPE_COMMENT));
             }
             vo.set("user",userService.getUser(comment.getUserId()));
+            vo.set("singleCommentCount",commentService.getCommentCount(comment.getId(),EntityType.TYPE_COMMENT));
             vos.add(vo);
         }
         model.addAttribute("vos", vos);
+        model.addAttribute("commentCount",vos.size());
+        long followerCount = followService.getFollowerCount(questionid, EntityType.TYPE_QUESTION);
+        model.addAttribute("followerCount",followerCount);
+        List<ViewObject> followerUsers = new ArrayList<>();
+        List<Integer> userIds  = followService.getFollowers(questionid,EntityType.TYPE_QUESTION,20);
+        for(int id:userIds)
+        {
+            ViewObject vo = new ViewObject();
+            User user = userService.getUser(id);
+            if(user==null)
+            {
+                continue;
+            }
+            vo.set("name",user.getName());
+            vo.set("headUrl",user.getHeadUrl());
+            vo.set("id",user.getId());
+            followerUsers.add(vo);
+        }
+        model.addAttribute("followUsers",followerUsers);
+        if (hostHolder.get() != null) {
+            model.addAttribute("followed", followService.isfollowers(hostHolder.get().getId(), EntityType.TYPE_QUESTION, questionid));
+        } else {
+            model.addAttribute("followed", false);
+        }
         return "detail";
     }
 }

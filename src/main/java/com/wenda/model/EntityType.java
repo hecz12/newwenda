@@ -6,4 +6,5 @@ package com.wenda.model;
 public class EntityType {
     public static final int TYPE_QUESTION = 0;
     public static final int TYPE_COMMENT = 1;
+    public static final int TYPE_USER = 2;
 }

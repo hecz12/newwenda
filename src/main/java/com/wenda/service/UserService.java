@@ -128,7 +128,7 @@ public class UserService {
             map.put("msg","密码为空");
             return map;
         }
-        User user = userDao.selectByName(name);
+        User user = userDao.selectByEmail(name);
         if(user==null)
         {
             map.put("msg","此用户不存在");

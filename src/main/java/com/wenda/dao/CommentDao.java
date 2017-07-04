@@ -13,7 +13,7 @@ import java.util.List;
 public interface CommentDao {
     String INSERT_FILED = " content,user_id,entity_id,entity_type,create_date,status ";
     String SELECT_FILED = " id,"+INSERT_FILED;
-    String TABLE_NAME = "comment";
+    String TABLE_NAME = "comment ";
 
     @Insert({"insert into",TABLE_NAME," (",INSERT_FILED," ) " +
             "values (#{content},#{userId},#{entityId},#{entityType},#{createDate}" +
@@ -40,4 +40,7 @@ public interface CommentDao {
     int updateStatus(@Param("entityId") int entityId,
                      @Param("entityType") int entityType,
                      @Param("status") int status);
+
+    @Select({"select count(id) from ",TABLE_NAME," where user_id = #{userId}"})
+    int getUserCommentCount(int userId);
 }

@@ -2,6 +2,7 @@ package com.wenda.service;
 
 import com.wenda.dao.CommentDao;
 import com.wenda.model.Comment;
+import javafx.scene.control.IndexRange;
 import org.apache.ibatis.javassist.bytecode.annotation.BooleanMemberValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,11 @@ public class CommentService {
     public List getCommentList(int entityId,int entityType,int limit,int offset)
     {
         return commentDao.selectCommentByEntity(entityId,entityType,limit,offset);
+    }
+
+    public int getUserCommentCount(int userId)
+    {
+        return commentDao.getUserCommentCount(userId);
     }
 
     public int addComment(Comment comment)
