@@ -37,12 +37,12 @@ public class FollowService {
         String followeeKey = RedisKeyUtils.getFolloweeKey(entityType,userId);
         String followerKey = RedisKeyUtils.getFollowerKey(entityType, entityId);
         Jedis jedis = jedisAdapter.getJedis();
-        Transaction tx = jedis.multi();
+        Transaction tx = jedisAdapter.multi(jedis);
         //向关注列表中添加问题
         tx.zadd(followeeKey,date.getTime(),String.valueOf(entityId));
         //向粉丝列表中添加用户
         tx.zadd(followerKey,date.getTime(),String.valueOf(userId));
-        List<Object> ret = tx.exec();
+        List<Object> ret = jedisAdapter.exec(tx,jedis);
         if(ret!=null&&ret.size()==2&&((Long)ret.get(0)>0)&&((Long)ret.get(1)>0))
         {
             return true;
@@ -62,12 +62,12 @@ public class FollowService {
         String followeeKey = RedisKeyUtils.getFolloweeKey(entityType,userId);
         String followerKey = RedisKeyUtils.getFollowerKey(entityType, entityId);
         Jedis jedis = jedisAdapter.getJedis();
-        Transaction tx = jedis.multi();
+        Transaction tx = jedisAdapter.multi(jedis);
         //向关注列表中添加问题
         tx.zrem(followeeKey,String.valueOf(entityId));
         //向粉丝列表中添加用户
         tx.zrem(followerKey,String.valueOf(userId));
-        List<Object> ret = tx.exec();
+        List<Object> ret = jedisAdapter.exec(tx,jedis);
         if(ret!=null&&ret.size()==2&&((Long)ret.get(0)>0)&&((Long)ret.get(1)>0))
         {
             return true;
@@ -116,7 +116,7 @@ public class FollowService {
      * @param entityType
      * @return
      */
-    public boolean isfollowers(int userId,int entityId,int entityType)
+    public boolean isfollowers(int userId,int entityType,int entityId)
     {
         String key = RedisKeyUtils.getFollowerKey(entityType,entityId);
         return jedisAdapter.zscore(key,String.valueOf(userId))!=null;

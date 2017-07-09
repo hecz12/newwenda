@@ -1,6 +1,10 @@
 package com.wenda.Utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange;
+
+import java.util.Map;
+
 import java.util.Map;
 /**
  * Created by 49540 on 2017/6/28.
@@ -12,6 +16,15 @@ public class JSONUtils {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code",code);
         jsonObject.put("msg",msg);
+        return jsonObject.toJSONString();
+    }
+    public static String getJSONString(Map<String,String> map)
+    {
+        JSONObject jsonObject = new JSONObject();
+        for (Map.Entry<String,String> entry:map.entrySet())
+        {
+            jsonObject.put(entry.getKey(),entry.getValue());
+        }
         return jsonObject.toJSONString();
     }
 

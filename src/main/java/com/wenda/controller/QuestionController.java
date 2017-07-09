@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * Created by 49540 on 2017/6/28.
  */
 @Controller
-public class QuestionComtroller {
+public class QuestionController {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
     @Autowired
     QuestionService questionService;
@@ -60,7 +60,7 @@ public class QuestionComtroller {
     }
 
     @RequestMapping(path = {"/question/{questionId}"},method = RequestMethod.GET)
-    public String questionDetail(@PathVariable(value = "questionId",required = false) int questionid
+    public String questionDetail(@PathVariable(value = "questionId") int questionid
                                 ,Model model)
     {
         Question question = questionService.getQuestionById(questionid);
@@ -105,11 +105,14 @@ public class QuestionComtroller {
             followerUsers.add(vo);
         }
         model.addAttribute("followUsers",followerUsers);
+
         if (hostHolder.get() != null) {
             model.addAttribute("followed", followService.isfollowers(hostHolder.get().getId(), EntityType.TYPE_QUESTION, questionid));
+            System.out.println(followService.isfollowers(hostHolder.get().getId(), EntityType.TYPE_QUESTION, questionid));
         } else {
             model.addAttribute("followed", false);
         }
+
         return "detail";
     }
 }

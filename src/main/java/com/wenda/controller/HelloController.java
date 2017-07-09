@@ -52,7 +52,7 @@ public class HelloController {
             User user = hostHolder.get();
             if(user!=null)
             {
-                vo.set("followed",followService.isfollowers(user.getId(),question.getId(),EntityType.TYPE_QUESTION));
+                vo.set("followed",followService.isfollowers(user.getId(),EntityType.TYPE_QUESTION,question.getId()));
             }else{
                 vo.set("followed",false);
             }

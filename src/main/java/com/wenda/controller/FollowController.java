@@ -52,13 +52,17 @@ public class FollowController {
         {
             return JSONUtils.getJSONString(999);
         }
+        if(user.getId()==userId)
+        {
+            return JSONUtils.getJSONString(0,"您不能关注自己");
+        }
         boolean ret = followService.follow(user.getId(),userId, EntityType.TYPE_USER);
         eventProducer.fireEvent(new EventModel(EventType.FOLLOW).setActorId(user.getId())
                                 .setEntityId(userId).setEntityType(EntityType.TYPE_USER)
                                 .setEntityOwnerId(userId).setExt("username",user.getName())
         );
         return JSONUtils.getJSONString(ret?0:1,String.valueOf(
-                followService.getFollowerCount(userId,EntityType.TYPE_USER)));
+                followService.getFolloweeCount(user.getId(),EntityType.TYPE_USER)));
     }
 
     @RequestMapping(path = {"/unfollowUser"},method = {RequestMethod.GET,RequestMethod.POST})
@@ -75,7 +79,7 @@ public class FollowController {
                 .setEntityId(userId).setEntityType(EntityType.TYPE_USER).setEntityOwnerId(userId)
                 .setExt("username",user.getName()));
         return JSONUtils.getJSONString(ret?0:1,String.valueOf(
-                followService.getFollowerCount(userId,EntityType.TYPE_USER)));
+                followService.getFolloweeCount(user.getId(),EntityType.TYPE_USER)));
     }
 
     @RequestMapping(path = {"/followQuestion"},method = {RequestMethod.GET,RequestMethod.POST})
@@ -98,7 +102,7 @@ public class FollowController {
         info.put("headUrl", user.getHeadUrl());
         info.put("name", user.getName());
         info.put("id", user.getId());
-        info.put("count", followService.getFollowerCount(EntityType.TYPE_QUESTION, questionId));
+        info.put("count", followService.getFollowerCount(questionId,EntityType.TYPE_USER));
         return JSONUtils.getJSONString(ret ? 0 : 1, info);
     }
 
@@ -119,7 +123,7 @@ public class FollowController {
                 .setExt("quetionName",question.getTitle()));
         Map<String, Object> info = new HashMap<>();
         info.put("id", user.getId());
-        info.put("count", followService.getFollowerCount(EntityType.TYPE_QUESTION, questionId));
+        info.put("count", followService.getFollowerCount(questionId,EntityType.TYPE_USER));
         return JSONUtils.getJSONString(ret ? 0 : 1, info);
     }
 
@@ -173,7 +177,7 @@ public class FollowController {
             ViewObject vo = new ViewObject();
             vo.set("user",user);
             vo.set("commentCount",commentService.getUserCommentCount(user.getId()));
-            vo.set("followeeCount",followService.getFollowerCount(id,EntityType.TYPE_USER));
+            vo.set("followeeCount",followService.getFolloweeCount(id,EntityType.TYPE_USER));
             vo.set("followerCount",followService.getFollowerCount(id,EntityType.TYPE_USER));
             if (localUserId != 0) {
                 vo.set("followed", followService.isfollowers(localUserId, EntityType.TYPE_USER, id));

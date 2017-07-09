@@ -16,6 +16,8 @@ public class RedisKeyUtils {
     public static final String BIZ_FOLLOWEE = "FOLLOWEE";
     //粉丝对象
     public static final String BIZ_FOLLOWER = "FOLLOWER";
+    //时间线
+    public static final String TIMELINE_KEY = "TIMELINE";
 
 
     public static String getFolloweeKey(int entityType,int entityId)
@@ -26,6 +28,11 @@ public class RedisKeyUtils {
     public static String getFollowerKey(int entityType,int entityId)
     {
         return BIZ_FOLLOWER+SIPLT+String.valueOf(entityType)+String.valueOf(entityId);
+    }
+
+    public static String getTimelineKey(int userId)
+    {
+        return TIMELINE_KEY+String.valueOf(userId);
     }
 
     /**

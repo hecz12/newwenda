@@ -13,11 +13,12 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
 
 import java.io.IOException;
+import java.security.Key;
 import java.util.List;
 import java.util.Set;
 
 /**
- * redis的set工具类，保证用户不能多次出现在同一个set中
+ * redis的工具类，使用redis实现一些访问频率高的信息
  * Created by 49540 on 2017/6/29.
  */
 @Component
@@ -31,12 +32,31 @@ public class JedisAdapter implements InitializingBean {
         jedisPool = new JedisPool("redis://localhost:6379/10");
     }
 
-        public Set<String> zrevrange(String key, int start, int end)
+    public Set<String> zrevrange(String key, int start, int end)
     {
         Jedis jedis = null;
         try{
             jedis = jedisPool.getResource();
             return jedis.zrevrange(key,start,end);
+        }catch (Exception e)
+        {
+            System.out.println("出现异常"+e.getMessage());
+        }
+        finally {
+            if(jedis!=null)
+            {
+                jedis.close();
+            }
+        }
+        return  null;
+    }
+
+    public List<String> lrange(String key,int start,int end)
+    {
+        Jedis jedis = null;
+        try{
+            jedis = jedisPool.getResource();
+            return jedis.lrange(key,start,end);
         }catch (Exception e)
         {
             System.out.println("出现异常"+e.getMessage());
@@ -76,8 +96,8 @@ public class JedisAdapter implements InitializingBean {
 
     /**
      * 从对应key的有序集合中找到成员member的score
-     * @param key
-     * @param member
+     * @param key   集合的标识值
+     * @param member  排序集合中的成员标识
      * @return
      */
     public Double zscore(String key,String member)
@@ -101,7 +121,7 @@ public class JedisAdapter implements InitializingBean {
 
     /**
      * 开启事务
-     * @param jedis
+     * @param jedis jedis连接
      * @return
      */
     public Transaction multi(Jedis jedis)
@@ -111,7 +131,7 @@ public class JedisAdapter implements InitializingBean {
         }
         catch (Exception e)
         {
-            System.out.println("出现异常"+e.getMessage());
+            System.out.println("出现开启事务异常"+e.getMessage());
         }
         finally {
         }
@@ -120,8 +140,8 @@ public class JedisAdapter implements InitializingBean {
 
     /**
      * 对事务进行原子操作的执行
-     * @param tx
-     * @param jedis
+     * @param tx  事务
+     * @param jedis jedis连接
      * @return
      */
     public List<Object> exec(Transaction tx,Jedis jedis)
@@ -131,7 +151,7 @@ public class JedisAdapter implements InitializingBean {
         }
         catch (Exception e)
         {
-            System.out.println("出现异常"+e.getMessage());
+            System.out.println("出现执行异常"+e.getMessage());
             tx.discard();
         }
         finally {
